@@ -225,7 +225,7 @@ country_sheet = "Country Ratings, Statuses "
 un_data_file = "UNSD — Methodology.csv"
 
 if __name__ == '__main__':
-    # do_historical_graph(data_file_dir, hist_year_col_name, hist_indicator_columns)
-    # do_country_data(data_file_dir, country_sheet)
-    # do_regional_data(data_file_dir, country_sheet, un_data_file)
+    do_historical_graph(data_file_dir, hist_year_col_name, hist_indicator_columns)
+    do_country_data(data_file_dir, country_sheet)
+    do_regional_data(data_file_dir, country_sheet, un_data_file)
     do_develop_data(data_file_dir, country_sheet, un_data_file)
