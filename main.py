@@ -88,7 +88,6 @@ def clean_for_countries(data):
 
 
 def plot_advancing_retreating(data):
-    width = .35  # width of the bars
     plt.plot(data.columns, data.T['advancing'], label='Advancing')
     plt.plot(data.columns, data.T['retreating'], label='Retreating')
     plt.ylabel("Proportion of Change")
@@ -103,6 +102,7 @@ def get_un_country_data(data_dir):
     return pd.read_csv(data_dir, error_bad_lines=False)
 
 
+# Combine methods for 2c
 def do_regional_data(file_dir, sheet, un_data_dir):
     data = fetch_data(file_dir, sheet=sheet)
     country_data = get_un_country_data(un_data_dir)
@@ -110,6 +110,7 @@ def do_regional_data(file_dir, sheet, un_data_dir):
     plot_regional_bar(proportions)
 
 
+# Combine methods for 2d
 def do_develop_data(file_dir, sheet, un_data_dir):
     data = fetch_data(file_dir, sheet=sheet)
     country_data = get_un_country_data(un_data_dir)
@@ -117,6 +118,7 @@ def do_develop_data(file_dir, sheet, un_data_dir):
     plot_develop_line(proportions)
 
 
+# Take the data from files and put it into a format for plotting
 def clean_for_regions(data, un_data):
     pre_data_frame = dict()
     pre_data_frame['Country or Area'] = data["Survey Edition"][2:]
@@ -216,6 +218,7 @@ def plot_develop_line(averages):
     plt.ylabel("Average FiW Score")
     plt.title("LDC vs Non LDC FiW scores 1995-2020")
     plt.xlabel("Years")
+    plt.ylabel("FiW Score")
     plt.legend(['LDC', 'Non-LDC'])
     plt.savefig('2d.png')
     plt.clf()
