@@ -16,7 +16,7 @@ def clean_historical_data(data, min_year=1995, year_col="Year(s) Under Review**"
     return data[data[year_col] >= min_year]
 
 
-def create_historical_bar_plot(data, x_col, y_cols, year_mod=5, bar_width=4, dest="historical.png"):
+def create_historical_bar_plot(data, x_col, y_cols, year_mod=5, bar_width=4, dest="2a.png"):
     data = data[data[x_col] % year_mod == 0]
     cmap = plt.get_cmap("viridis")
     colors = cmap(np.linspace(0, 1, len(y_cols)))
@@ -33,6 +33,7 @@ def create_historical_bar_plot(data, x_col, y_cols, year_mod=5, bar_width=4, des
     plt.legend(y_cols, loc=(0.01, 0.01))
     plt.ylabel(",".join(legend_list))
     plt.savefig(dest)
+    plt.clf()
 
 
 def do_historical_graph(file_dir, year_col_name, indicator_columns):
@@ -94,7 +95,8 @@ def plot_advancing_retreating(data):
     plt.title("Comparison of Advancing and Declining Democracies")
     plt.xlabel("Years")
     plt.legend()
-    plt.savefig('Year by country')
+    plt.savefig('2b.png')
+    plt.clf()
 
 
 def get_un_country_data(data_dir):
@@ -203,7 +205,8 @@ def plot_regional_bar(proportions):
     plt.legend(dem_levels)
     plt.tight_layout()
     plt.ylabel("Proportion")
-    plt.savefig("regions.png")
+    plt.savefig("2c.png")
+    plt.clf()
 
 
 def plot_develop_line(averages):
@@ -214,7 +217,8 @@ def plot_develop_line(averages):
     plt.title("LDC vs Non LDC FiW scores 1995-2020")
     plt.xlabel("Years")
     plt.legend(['LDC', 'Non-LDC'])
-    plt.savefig('develop.png')
+    plt.savefig('2d.png')
+    plt.clf()
 
 
 
