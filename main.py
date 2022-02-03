@@ -89,8 +89,8 @@ def clean_for_countries(data):
 
 def plot_advancing_retreating(data):
     width = .35  # width of the bars
-    plt.bar(data.columns - width/2.0, data.T['advancing'], width, label='Advancing')
-    plt.bar(data.columns + width/2.0, data.T['retreating'], width, label='Retreating')
+    plt.plot(data.columns, data.T['advancing'], label='Advancing')
+    plt.plot(data.columns, data.T['retreating'], label='Retreating')
     plt.ylabel("Proportion of Change")
     plt.title("Comparison of Advancing and Declining Democracies")
     plt.xlabel("Years")
