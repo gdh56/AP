@@ -12,16 +12,19 @@ def fetch_data(file_dir, sheet="Historical distribution"):
 
 def clean_historical_data(data, min_year=1995, year_col="Year(s) Under Review**"):
     data = data.dropna(subset=[year_col], how='all')
+    # Replace years with something actually usable as years
     data[year_col] = data[year_col].apply(lambda x: int(str(x).split(",")[-1].split(" ")[-1].strip()))
     return data[data[year_col] >= min_year]
 
 
 def create_historical_bar_plot(data, x_col, y_cols, year_mod=5, bar_width=4, dest="2a.png"):
     data = data[data[x_col] % year_mod == 0]
+    # This just sets up an automap for colors
     cmap = plt.get_cmap("viridis")
     colors = cmap(np.linspace(0, 1, len(y_cols)))
     legend_list = []
     bottoms = np.linspace(0, 0, len(data[y_cols]))
+    # Avoid copying and pasting the lines for each new plot
     for index, y_col in enumerate(y_cols):
         plt.bar(data[x_col], data[y_col], bottom=bottoms, color=colors[index], width=bar_width)
         if len(bottoms) == 0:
@@ -148,32 +151,42 @@ def clean_for_develop(data, un_data):
     year = 0
     for col, col_data in data.iteritems():
         col_header = col_data.at[0]
+        # This is the year column
         if col_header == "Year(s) Under Review":
             continue
         if type(col_header) is str or not np.isnan(col_header):
+            # Resilient way of pulling years based on the column title that handles
+            # the year spans.
             year = int(str(col_header).split("-")[0].split(".")[-1])
-
+        # Ignore years that are before 1995 and we don't care about the status column
         if year < 1995 or col_data[1] == "Status":
             continue
+        # Add a dict to hold the data for each year
         if not year in pre_data_frame.keys():
             pre_data_frame[year] = dict()
+        # Create a dict of year -> PL or CR -> the column data
         pre_data_frame[year][str(col_data[1]).strip()] = col_data[2:]
     fiw_dict = {"Country or Area": pre_data_frame["Country or Area"]}
+    # Build up the dictionary to convert to a dataframe
     for dict_year, metrics in pre_data_frame.items():
         if dict_year == "Country or Area":
             continue
+        # Get the two types of metrics without placeholder values
         cl_series = metrics["CL"].where(metrics['CL'] != '-').dropna()
         pr_series = metrics["PR"].where(metrics['CL'] != '-').dropna()
         fiw_dict[dict_year] = (cl_series + pr_series) / 2.0
     status_df = pd.DataFrame(fiw_dict)
     combined_df = status_df.merge(un_data, how="inner", on="Country or Area")
     result = {"ldc": [], "non-ldc": []}
+    # For each year get the average of the value for LDC and non-LDC countries
     for yr in range(1995, 2021):
         result['ldc'].append(np.mean(combined_df[combined_df["Least Developed Countries (LDC)"] == 'x'][yr]))
         result['non-ldc'].append(np.mean(combined_df[combined_df["Least Developed Countries (LDC)"] != 'x'][yr]))
     return result
 
 
+# Helper function to iterate over the years in question and proportions
+# Returns the data in dictionary form
 def get_democracy_proportions(df):
     years = [2005, 2020]
     dem_levels = ["PF", "F", "NF"]
@@ -190,12 +203,15 @@ def plot_regional_bar(proportions):
     colors = cmap(np.linspace(0, 1, 3))
     bar_width = .5
     dem_levels = ["F", "PF", "NF"]
+    # Take the dictionary you made and use the bottoms aggregator to create the stacked
+    # graph so it looks like parts of a whole
     for region, years in proportions.items():
         for year, dem_levels_items in years.items():
             bottoms = np.linspace(0, 0, len(proportions))
             count = -1
             for dem_level in dem_levels:
                 count += 1
+                # This string format keeps things alphabetical
                 plt.bar("%s_%s" % (year, region), dem_levels_items[dem_level], bottom=bottoms, color=colors[count], width=bar_width)
                 if len(bottoms) == 0:
                     bottoms = dem_levels_items[dem_level]
@@ -224,7 +240,7 @@ def plot_develop_line(averages):
     plt.clf()
 
 
-
+# Define the country data meta data
 data_file_dir = "./Country_and_Territory_Ratings_and_Statuses_FIW1973-2021.xlsx"
 hist_year_col_name = "Year(s) Under Review**"
 hist_indicator_columns = ["% of F Countries", "% of PF Countries", "% of NF Countries"]
@@ -232,7 +248,11 @@ country_sheet = "Country Ratings, Statuses "
 un_data_file = "UNSD — Methodology.csv"
 
 if __name__ == '__main__':
+    # 2a
     do_historical_graph(data_file_dir, hist_year_col_name, hist_indicator_columns)
+    # 2b
     do_country_data(data_file_dir, country_sheet)
+    # 2c
     do_regional_data(data_file_dir, country_sheet, un_data_file)
+    # 2d
     do_develop_data(data_file_dir, country_sheet, un_data_file)
