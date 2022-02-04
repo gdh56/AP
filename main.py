@@ -31,10 +31,10 @@ def create_historical_bar_plot(data, x_col, y_cols, year_mod=5, bar_width=4, des
             bottoms = data[y_col]
         else:
             bottoms = bottoms + data[y_col]
-    plt.xlabel(x_col)
+    plt.xlabel("Years")
     plt.title("Democracy Status Over Time")
     plt.legend(y_cols, loc=(0.01, 0.01))
-    plt.ylabel(",".join(legend_list))
+    plt.ylabel("Proportion of Democratic Status")
     plt.savefig(dest)
     plt.clf()
 
